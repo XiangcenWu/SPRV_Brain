@@ -42,20 +42,44 @@ print(len(os.listdir(r'E:\SPRV_Brain\data\ISBI2024-BraTS-GoAT-TrainingData\ISBI2
 
 from monai import transforms
 from glob import glob
-label_path = glob(r'E:\SPRV_Brain\data\ISBI2024-BraTS-GoAT-TrainingData\ISBI2024-BraTS-GoAT-TrainingData\BraTS-GoAT-00000\*seg*')
-image_path = [file_dir for file_dir in glob(r'E:\SPRV_Brain\data\ISBI2024-BraTS-GoAT-TrainingData\ISBI2024-BraTS-GoAT-TrainingData\BraTS-GoAT-00000\*') if file_dir not in label_path]
+index = '00001'
+label_path = glob(r'E:\SPRV_Brain\data\ISBI2024-BraTS-GoAT-TrainingData\ISBI2024-BraTS-GoAT-TrainingData\BraTS-GoAT-' + index + '\*seg*')
+image_path = [file_dir for file_dir in glob(r'E:\SPRV_Brain\data\ISBI2024-BraTS-GoAT-TrainingData\ISBI2024-BraTS-GoAT-TrainingData\BraTS-GoAT-' + index + '\*') if file_dir not in label_path]
+print(image_path)
 data_dict = {'image': image_path,
              'label': label_path}
+print(data_dict)
 data_reader = transforms.LoadImaged(keys = ["image", "label"])
 
 data = data_reader(data_dict)
 
-print(data.keys())
+
 img, label = data['image'], data['label']
 
-print('hello')
+label = (label != 0).to(label.dtype)
+
 
 meta_dict = data['image'].meta
+# print(meta_dict.keys(), meta_dict)
+print(meta_dict['pixdim'])
 
-print(meta_dict)
 
+print(img.shape)
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming 'image' is your image data, a 2D numpy array
+# Replace it with your actual image data
+
+img = img[2, :, :, 45]
+# Compute histogram of pixel intensities
+hist, bar = np.histogram(img.flatten(), bins=1000, range=(300, 2000))
+
+# Plot the histogram
+# plt.bar(bar[:-1], hist)
+# plt.show()
+
+
+# plt.imshow(label[:, :, 45])
+# plt.show()
