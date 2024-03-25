@@ -1,0 +1,35 @@
+data:
+  data_path: /home/xiangcen/SPRV_Brain/data/BraTs_H5
+
+  total_number: 14
+
+  meta_train_number: 432
+  query_set_number: 432
+  support_set_umber: 43
+
+  meta_test_number: 432
+  development_set_number: 423
+  estimation_set_number: 654
+
+
+
+segmentation:
+  batch_size: 6
+  epoch: 500
+  shuffle: True
+  drop_last: False
+
+
+selection:
+  batch_size: 1
+  sequence_length: 8
+  shuffle: True
+  drop_last: True
+
+
+workflow_evaluation:
+  pre_train: True
+  t_values: [0.95, 0.9, 0.8, 0.6, 0.4]
+
+
+

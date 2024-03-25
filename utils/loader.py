@@ -1,42 +1,27 @@
 import h5py
 import torch
+from monai.transforms import Transform
+from monai.data import Dataset, DataLoader
 
 
 
 
-class ReadH5d(object):
-    """Convert ndarrays in sample to Tensors."""
-
-    def __call__(self, file_path):
-        return self.h5_to_dict(file_path)
-    
-    
-    def h5_to_dict(self, file_path):
-        h5f = h5py.File(file_path, 'r')
-        data_dict = {
-            'image': torch.from_numpy(h5f['image'][:]), 
-            'label': torch.from_numpy(h5f['label'][:])
-        }
-        h5f.close()
-        return data_dict
-    
-    
-
-    
-
-def get_loader_seg(batch_size, data_dir):
-    pass
+def get_loader_seg(data_dir_list: list, reader: Transform, batch_size: int, shuffle: bool, drop_last: bool, num_workers=0):
+    dataset = Dataset(dataset=data_dir_list, transform=reader)
+    return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
 
 
-def get_loader_ranking(batch_size, sequence_length, data_dir):
-    pass
+def get_loader_ranking(data_dir_list: list, reader: Transform, batch_size: int, sequence_length: int, shuffle: bool, drop_last: bool, num_workers=0):
+    dataset = Dataset(dataset=data_dir_list, transform=reader)
+    return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size*sequence_length, shuffle=shuffle, drop_last=drop_last)
 
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
+    from utils.file_loader import ReadH5d
     reader = ReadH5d()
-    data_dict = reader(r'E:\SPRV_Brain\data\BraTs_H5\BarTs00002.h5')
+    data_dict = reader(r'E:\SPRV_Brain\data\BraTs_H5\BarTs00302.h5')
     
     img, label = data_dict['image'], data_dict['label']
     # Generate some random data for plotting
