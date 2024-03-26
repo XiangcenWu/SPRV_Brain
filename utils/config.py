@@ -31,6 +31,11 @@ class MainConfig():
         for key, value in dict.items():
             setattr(self, key, value)
             
+            
+    def save_config_file(self, file_dir: str):
+        pass
+        
+            
         
 
 

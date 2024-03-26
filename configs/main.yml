@@ -1,3 +1,7 @@
+others:
+  nick_name: MainExperiment
+  device: cuda:0
+
 data:
   data_path: /home/xiangcen/SPRV_Brain/data/BraTs_H5
 
