@@ -11,10 +11,10 @@ class MainConfig():
             'Config path ({}) does not exist'.format(path)
         assert path.endswith('yml') or path.endswith('yaml'), \
             'Config file ({}) should be yaml format'.format(path)
-        args_dict = self.parse_from_yaml(path)
+        self.args_dict = self.parse_from_yaml(path)
         
 
-        self.add_nest_dict_item(args_dict)
+        self.add_nest_dict_item(self.args_dict)
         if extra:
             self.add_nest_dict_item(extra)
             
@@ -31,9 +31,7 @@ class MainConfig():
         for key, value in dict.items():
             setattr(self, key, value)
             
-            
-    def save_config_file(self, file_dir: str):
-        pass
+
         
             
         
@@ -58,11 +56,11 @@ class SubConfig():
 
 
 if __name__ =="__main__":
-    cfg = MainConfig('/home/xiangcen/SPRV_Brain/configs/main.yml', {'others': {'device': 'cuda:0'}})
+    cfg = MainConfig('/home/xiangcen/SPRV_Brain/configs/main.yml')
     for i in cfg.workflow_evaluation.t_values:
         print(i)
     print(type(cfg.workflow_evaluation.pre_train))
     print(cfg.others.device)
-    
-    cfg.add_dict_item({'random': [12, 32, 43]})
-    print(cfg.random)
+
+
+    print(cfg.others.seed)

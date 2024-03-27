@@ -1,5 +1,6 @@
 import argparse
 from utils.config import MainConfig
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Model training')
@@ -10,6 +11,7 @@ def parse_args():
     return parser.parse_args()
 
 
+    
 
 def main(args):
     assert args.config is not None, \
