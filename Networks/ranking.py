@@ -1,19 +1,18 @@
+import torch
+import torch.nn as nn
+from monai.networks.nets.swin_unetr import SwinTransformer 
+from monai.networks.blocks import TransformerBlock
 
-
-
-
-
-
-
+device = 'cuda:0'
 class SelectionUNet(nn.Module):
-    # input is strict to 96, 96, 96
+    # input is strict to 64, 64, 64
     
     def __init__(self, img_shape, token_length, encoder_drop, transformer_drop):
         super().__init__()
         W, H, D = img_shape
         
         self.encoder = SwinTransformer(
-            in_chans = 2,
+            in_chans = 5,
             embed_dim = 24,
             window_size = (7, 7, 7),
             patch_size= (2, 2, 2),
@@ -27,7 +26,7 @@ class SelectionUNet(nn.Module):
             nn.Conv3d(24, 24, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
             nn.Conv3d(24, 24, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
             nn.Conv3d(24, 24, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
-            nn.Conv3d(24, token_length, (3, 3, 2)),
+            nn.Conv3d(24, token_length, (2, 2, 2)),
             nn.Flatten(1),
             nn.ReLU()
         )
@@ -35,25 +34,25 @@ class SelectionUNet(nn.Module):
             nn.Conv3d(48, 48, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
             nn.Conv3d(48, 48, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
             nn.Conv3d(48, 48, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
-            nn.Conv3d(48, token_length, (3, 3, 2)),
+            nn.Conv3d(48, token_length, (2, 2, 2)),
             nn.Flatten(1),
             nn.ReLU()
         )
         self.convert_x_96 = nn.Sequential(
             nn.Conv3d(96, 96, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
             nn.Conv3d(96, 96, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
-            nn.Conv3d(96, token_length, (3, 3, 2)),
+            nn.Conv3d(96, token_length, (2, 2, 2)),
             nn.Flatten(1),
             nn.ReLU()
         )
         self.convert_x_192 = nn.Sequential(
             nn.Conv3d(192, 192, (3, 3, 3), (2, 2, 2), (1, 1, 1)),
-            nn.Conv3d(192, token_length, (3, 3, 2)),
+            nn.Conv3d(192, token_length, (2, 2, 2)),
             nn.Flatten(1),
             nn.ReLU()
         )
         self.convert_x_384 = nn.Sequential(
-            nn.Conv3d(384, token_length, (3, 3, 2)),
+            nn.Conv3d(384, token_length, (2, 2, 2)),
             nn.Flatten(1),
             nn.ReLU()
         )
@@ -70,11 +69,7 @@ class SelectionUNet(nn.Module):
         self.tf_1 = TransformerBlock(token_length, token_length+ 2048, 8, transformer_drop)
         self.tf_0 = TransformerBlock(token_length, token_length+ 2048, 8, transformer_drop)
         
-        self.bn_4 = nn.BatchNorm1d(token_length)
-        self.bn_3 = nn.BatchNorm1d(token_length)
-        self.bn_2 = nn.BatchNorm1d(token_length)
-        self.bn_1 = nn.BatchNorm1d(token_length)
-        self.bn_0 = nn.BatchNorm1d(token_length)
+        
 
 
 
@@ -88,27 +83,29 @@ class SelectionUNet(nn.Module):
     def forward(self, x):
         
         x = self.encoder(x)
+        for i in x:
+            print(i.shape)
         
         
         x_24 = x[0]
         x_24 = self.convert_x_24(x_24)
-        x_24 = self.bn_4(x_24).unsqueeze(0)
+        x_24 = x_24.unsqueeze(0)
         
         x_48 = x[1]
         x_48 = self.convert_x_48(x_48)
-        x_48 = self.bn_3(x_48).unsqueeze(0)
+        x_48 = x_48.unsqueeze(0)
         
         x_96 = x[2]
         x_96 = self.convert_x_96(x_96)
-        x_96 = self.bn_2(x_96).unsqueeze(0)
+        x_96 = x_96.unsqueeze(0)
         
         x_192 = x[3]
         x_192 = self.convert_x_192(x_192)
-        x_192 = self.bn_1(x_192).unsqueeze(0)
+        x_192 = x_192.unsqueeze(0)
         
         x_384 = x[4]
         x_384 = self.convert_x_384(x_384)
-        x_384 = self.bn_0(x_384).unsqueeze(0)
+        x_384 = x_384.unsqueeze(0)
 
 
 
@@ -121,7 +118,14 @@ class SelectionUNet(nn.Module):
         x = self.tf_1(x + x_48)
         
         x = self.tf_0(x + x_24)
-        
+
 
         
         return self.projection_tf(x.squeeze(0))
+
+
+if __name__ == "__main__":
+    net = SelectionUNet((64, 64, 64), 2048, 0.1, 0.1).to(device)
+    x = torch.ones(8, 5, 64, 64, 64).to(device)
+    x = net(x)
+    print(x.shape)

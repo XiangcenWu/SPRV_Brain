@@ -13,7 +13,7 @@ class MainConfig():
             'Config file ({}) should be yaml format'.format(path)
         self.args_dict = self.parse_from_yaml(path)
         
-
+        
         self.add_nest_dict_item(self.args_dict)
         if extra:
             self.add_nest_dict_item(extra)
@@ -21,22 +21,19 @@ class MainConfig():
 
     def add_nest_dict_item(self, nest_dict: dict):
         for key, value in nest_dict.items():
-            setattr(self, key, SubConfig(value))
-            current_attr = getattr(self, key)
-            for sub_key, sub_value in current_attr.sub_dict.items():
-                setattr(current_attr, sub_key, sub_value)
-                
+            if isinstance(value, dict):
+                setattr(self, key, SubConfig(value))
+                current_attr = getattr(self, key)
+                for sub_key, sub_value in current_attr.sub_dict.items():
+                    setattr(current_attr, sub_key, sub_value)
+            else:
+                setattr(self, key, value)
+                    
                 
     def add_dict_item(self, dict: dict):
         for key, value in dict.items():
             setattr(self, key, value)
             
-
-        
-            
-        
-
-
 
     @classmethod
     def parse_from_yaml(cls, path: str):
@@ -63,4 +60,5 @@ if __name__ =="__main__":
     print(cfg.others.device)
 
 
-    print(cfg.others.seed)
+    print(type(cfg.segmentation.learning_rate))
+    

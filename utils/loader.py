@@ -6,12 +6,14 @@ from monai.data import Dataset, DataLoader
 
 
 
-def get_loader_seg(data_dir_list: list, reader: Transform, batch_size: int, shuffle: bool, drop_last: bool, num_workers=0):
+def get_loader_seg(data_dir_list: list, reader: Transform, batch_size: int, \
+        shuffle: bool, drop_last: bool, num_workers=0):
     dataset = Dataset(dataset=data_dir_list, transform=reader)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
 
 
-def get_loader_ranking(data_dir_list: list, reader: Transform, batch_size: int, sequence_length: int, shuffle: bool, drop_last: bool, num_workers=0):
+def get_loader_ranking(data_dir_list: list, reader: Transform, batch_size: int, \
+        sequence_length: int, shuffle: bool, drop_last: bool, num_workers=0):
     dataset = Dataset(dataset=data_dir_list, transform=reader)
     return DataLoader(dataset, num_workers=num_workers, batch_size=batch_size*sequence_length, shuffle=shuffle, drop_last=drop_last)
 
