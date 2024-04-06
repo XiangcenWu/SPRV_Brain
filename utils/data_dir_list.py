@@ -15,12 +15,13 @@ def get_data_list(
 ):
     
     # check len of the data_dir
-    assert len(data_dir) == \
-        support_set_number+query_set_number+development_set_number+estimation_set_number, \
-            "x should be an integer"
+    
 
     random.seed(seed)
     data_dir_list = glob(os.path.join(data_dir, endwith))
+    assert len(data_dir_list) == \
+        support_set_number+query_set_number+development_set_number+estimation_set_number, \
+            "size does not match"
     data_dir_list.sort()
     random.shuffle(data_dir_list)
     return (

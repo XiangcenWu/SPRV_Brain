@@ -24,7 +24,7 @@ data:
 
 segmentation:
   batch_size: 6
-  epoch: 500
+  epoch: 1
   shuffle: True
   drop_last: False
   learning_rate: 0.0001
@@ -33,8 +33,8 @@ segmentation:
 
 
 ranking:
-  epoch: 2000
-  batch_size: 1
+  epoch: 1
+  batch_size: 10
   sequence_length: 8
   shuffle: True
   drop_last: True
@@ -46,7 +46,8 @@ ranking:
 
 workflow_evaluation:
   pre_train: True
-  t_values: [0.95, 0.9, 0.8, 0.6, 0.4, 0.3]
+  t_values: [0.1]
   seg_lr: 0.001
-  seg_epoch: 30
+  seg_epoch: 1
+  num_experiments: 1
 

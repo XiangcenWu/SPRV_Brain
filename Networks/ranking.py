@@ -4,7 +4,7 @@ from monai.networks.nets.swin_unetr import SwinTransformer
 from monai.networks.blocks import TransformerBlock
 
 device = 'cuda:0'
-class SelectionUNet(nn.Module):
+class RankUNet(nn.Module):
     # input is strict to 64, 64, 64
     
     def __init__(self, img_shape, ranking_channel, token_length, encoder_drop, transformer_drop):
@@ -83,8 +83,6 @@ class SelectionUNet(nn.Module):
     def forward(self, x):
         
         x = self.encoder(x)
-        for i in x:
-            print(i.shape)
         
         
         x_24 = x[0]
@@ -125,7 +123,7 @@ class SelectionUNet(nn.Module):
 
 
 if __name__ == "__main__":
-    net = SelectionUNet((64, 64, 64), 2048, 0.1, 0.1).to(device)
+    net = RankUNet((64, 64, 64), 5, 2048, 0.1, 0.1).to(device)
     x = torch.ones(8, 5, 64, 64, 64).to(device)
     x = net(x)
-    print(x.shape)
+    print(x)

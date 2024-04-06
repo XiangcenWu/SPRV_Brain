@@ -3,7 +3,7 @@ from utils.loader import get_loader_ranking, get_loader_seg
 from utils.dice_metric import dice_metric
 from utils.file_loader import ReadH5d
 import random
-from Networks.ranking import SelectionUNet
+from Networks.ranking import RankUNet
 from monai.networks.nets.swin_unetr import SwinUNETR
 import logging
 from monai.losses import DiceLoss
@@ -114,6 +114,7 @@ def select(development_set, t_value, sequnece_length, RankingModel, device):
             sel_output = RankingModel(torch.cat([img, label], dim=1))
             indexes_top = torch.topk(sel_output, 1, dim=0).indices.flatten().item()
             scores_top = torch.topk(sel_output, 1, dim=0).values.flatten().item()
+            print(scores_top)
             if scores_top > t_value:
                 # print('accept')
             
@@ -149,13 +150,13 @@ def workflow_evaluation(
             random.shuffle(development_set)
 
 
-            RankingModel = SelectionUNet(img_size, ranking_channel, token_length, encoder_drop = 0, transformer_drop=0)
+            RankingModel = RankUNet(img_size, ranking_channel, token_length, encoder_drop = 0, transformer_drop=0)
             
             RankingModel.load_state_dict(torch.load(ranking_net_dir, map_location=device))
             RankingModel.to(device)
             RankingModel.eval()
 
-            SegModel = SwinUNETR(img_size, 1, 1)
+            SegModel = SwinUNETR(img_size, seg_channel, 1)
             
             SegModel.load_state_dict(torch.load(seg_net_dir, map_location=device))
             SegModel.to(device)
@@ -256,3 +257,4 @@ def workflow_evaluation(
             logging.info(f'std of random: {random_val_scores.std().item()}, std of estimation set {estimation_set_list_scores.std().item()}')
             
 
+            del SegModel

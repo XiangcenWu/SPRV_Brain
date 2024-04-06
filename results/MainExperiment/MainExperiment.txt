@@ -1,3 +1,3 @@
-2024-04-06 00:01:06,536, test
-2024-04-06 00:01:06,537, fdsafsd
-2024-04-06 00:01:06,537, [64, 64, 64]
+2024-04-06 23:28:16,734, Segmentation training begins
+2024-04-06 23:37:47,130, On epoch 0, seg loss is 0.94
+2024-04-06 23:37:47,291, Seg model saved in <results/MainExperiment_seg.pt>
