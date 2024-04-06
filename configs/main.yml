@@ -3,6 +3,7 @@ nick_name: MainExperiment
 device: cuda:0
 seed: 25
 result_base_dir: "results"
+img_size: [64, 64, 64]
 
 
 data:
@@ -27,6 +28,7 @@ segmentation:
   shuffle: True
   drop_last: False
   learning_rate: 0.0001
+  num_channel: 4
   
 
 
@@ -37,9 +39,14 @@ ranking:
   shuffle: True
   drop_last: True
   learning_rate: 0.0005
+  token_length: 2048
+  num_channel: 5
   
 
 
 workflow_evaluation:
   pre_train: True
   t_values: [0.95, 0.9, 0.8, 0.6, 0.4, 0.3]
+  seg_lr: 0.001
+  seg_epoch: 30
+

@@ -7,12 +7,12 @@ device = 'cuda:0'
 class SelectionUNet(nn.Module):
     # input is strict to 64, 64, 64
     
-    def __init__(self, img_shape, token_length, encoder_drop, transformer_drop):
+    def __init__(self, img_shape, ranking_channel, token_length, encoder_drop, transformer_drop):
         super().__init__()
         W, H, D = img_shape
         
         self.encoder = SwinTransformer(
-            in_chans = 5,
+            in_chans = ranking_channel,
             embed_dim = 24,
             window_size = (7, 7, 7),
             patch_size= (2, 2, 2),

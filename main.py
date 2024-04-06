@@ -45,6 +45,7 @@ def main(args):
     logging.info('test')
     logging.debug('fdsafsdgsgdsa')
     logging.warning('fdsafsd')
+    logging.info(cfg.img_size)
 
 
 
