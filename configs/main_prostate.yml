@@ -1,0 +1,54 @@
+
+nick_name: MainExperiment_prostate
+device: cuda:0
+seed: 25
+result_base_dir: "results"
+img_size: [64, 64, 64]
+
+
+data:
+  data_path: /home/xiangcen/SPRV_Brain/data/MP_H5
+
+  total_number: 589
+
+  meta_train_number: 489
+  support_set_number: 200
+  query_set_number: 289
+  
+
+  meta_test_number: 100
+  development_set_number: 60
+  estimation_set_number: 40
+
+
+
+segmentation:
+  batch_size: 6
+  epoch: 100
+  shuffle: True
+  drop_last: False
+  learning_rate: 0.0001
+  num_channel: 1
+  
+
+
+ranking:
+  epoch: 200
+  batch_size: 1
+  sequence_length: 8
+  shuffle: True
+  drop_last: True
+  learning_rate: 0.0005
+  momentum: 0.9
+  token_length: 4096
+  num_channel: 2
+  
+
+
+workflow_evaluation:
+  pre_train: False
+  t_values: [0.95, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3]
+  seg_lr: 0.0001
+  seg_epoch: 50
+  num_experiments: 5
+

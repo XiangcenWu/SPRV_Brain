@@ -1,4 +1,6 @@
-import utils
+import os
 
 
-cfg = utils.mainconfi
+
+files_list = os.listdir('/home/xiangcen/SPRV_Brain/data/MP_H5')
+print(len(files_list))

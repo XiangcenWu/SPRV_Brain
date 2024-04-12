@@ -24,6 +24,7 @@ def train_ranking_epoch(
             output = seg_model(img)
             accuracy = dice_metric(output, label, post=True, mean=False)
 
+
         sel_output = rank_model(torch.cat([img, label], dim=1))
 
         loss = sel_loss_function(sel_output, accuracy, true_mean)
@@ -72,6 +73,17 @@ def test_sel_net(
         loss_e += loss.item()
         step_e += 1
     return loss_e / step_e
+
+
+
+
+
+
+
+
+
+
+
 
 
 

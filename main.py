@@ -67,7 +67,7 @@ def seg(cfg: MainConfig, sup_list: list):
             seg_loss_function=seg_loss_function,
             device=cfg.device
         )
-        if e % 1 == 0:
+        if e % 10 == 0:
             logging.info(f"On epoch {e}, seg loss is {train_loss:.2f}")
 
     torch.save(SegModel.state_dict(), seg_model_save_path)
@@ -109,7 +109,7 @@ def ranking(cfg: MainConfig, qry_list: list):
         cfg.ranking.token_length, encoder_drop = 0, transformer_drop=0)
     Rank_model.to(cfg.device)
     ##############################
-    rank_optimizer = torch.optim.AdamW(Rank_model.parameters(), lr=cfg.ranking.learning_rate)
+    rank_optimizer = torch.optim.RMSprop(Rank_model.parameters(), lr=cfg.ranking.learning_rate, alpha=0.99, eps=1e-08, weight_decay=0, momentum=cfg.ranking.momentum)
 
     for e in range(cfg.ranking.epoch):
 
@@ -124,7 +124,7 @@ def ranking(cfg: MainConfig, qry_list: list):
             device=cfg.device
         )
         
-        if e % 100 == 0:
+        if e % 10 == 0:
             logging.info(f"This is epoch {e}, ranking loss is {rank_loss:.4f}")
 
 
@@ -147,8 +147,8 @@ def main(args):
         development_set_number=cfg.data.development_set_number,
         estimation_set_number=cfg.data.estimation_set_number
     )
-    seg(cfg, sup_list=sup_set)
-    ranking(cfg, qry_set)
+    # seg(cfg, sup_list=sup_set)
+    # ranking(cfg, qry_set)
     workflow_evaluation(
         cfg.img_size,
         cfg.ranking.token_length,
@@ -162,14 +162,15 @@ def main(args):
         pre_train=cfg.workflow_evaluation.pre_train,
         seg_net_dir=os.path.join(cfg.result_base_dir, cfg.nick_name + '_seg.pt'),
         ranking_net_dir=os.path.join(cfg.result_base_dir, cfg.nick_name + '_rank.pt'),
-        device=cfg.device
-        
+        device=cfg.device,
+        cfg=cfg
     )
-    
-    
+
 
 
 
 if __name__ == '__main__':
     args = parse_args()
     main(args)
+
+

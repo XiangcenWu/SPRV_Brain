@@ -1,3 +1,1 @@
-2024-04-06 23:28:16,734, Segmentation training begins
-2024-04-06 23:37:47,130, On epoch 0, seg loss is 0.94
-2024-04-06 23:37:47,291, Seg model saved in <results/MainExperiment_seg.pt>
+2024-04-11 15:48:24,540, Segmentation training begins

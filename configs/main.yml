@@ -17,14 +17,14 @@ data:
   
 
   meta_test_number: 251
-  development_set_number: 150
-  estimation_set_number: 101
+  development_set_number: 101
+  estimation_set_number: 150
 
 
 
 segmentation:
   batch_size: 6
-  epoch: 1
+  epoch: 100
   shuffle: True
   drop_last: False
   learning_rate: 0.0001
@@ -33,20 +33,20 @@ segmentation:
 
 
 ranking:
-  epoch: 1
-  batch_size: 10
+  epoch: 1000
+  batch_size: 1
   sequence_length: 8
   shuffle: True
   drop_last: True
-  learning_rate: 0.0005
-  token_length: 2048
+  learning_rate: 0.01
+  token_length: 4096
   num_channel: 5
   
 
 
 workflow_evaluation:
   pre_train: True
-  t_values: [0.1]
+  t_values: [0.95, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3]
   seg_lr: 0.001
   seg_epoch: 1
   num_experiments: 1

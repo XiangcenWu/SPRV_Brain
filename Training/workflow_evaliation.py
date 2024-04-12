@@ -36,6 +36,8 @@ def inference_all_data_accuracy(data_dir, SegModel, batch_size, device):
             output = SegModel(img)
             accuracy = dice_metric(output, label, True, False)
             
+            # print(f'fasdfdsfas {accuracy}')
+            
             list.append(accuracy.flatten())
     all = torch.stack(list, dim=0).flatten()
     return all
@@ -114,7 +116,7 @@ def select(development_set, t_value, sequnece_length, RankingModel, device):
             sel_output = RankingModel(torch.cat([img, label], dim=1))
             indexes_top = torch.topk(sel_output, 1, dim=0).indices.flatten().item()
             scores_top = torch.topk(sel_output, 1, dim=0).values.flatten().item()
-            print(scores_top)
+            
             if scores_top > t_value:
                 # print('accept')
             
@@ -139,11 +141,12 @@ def workflow_evaluation(
         seg_channel:int = 4,
         ranking_channel:int = 5,
         sequence_length:int=8,
-        num_experimrnts: int=5,
+        num_experimrnts: int=10,
         pre_train: bool=True,
         seg_net_dir: str=None,
         ranking_net_dir: str=None,
-        device: str='cuda:0'
+        device: str='cuda:0',
+        cfg=None
     ):
     for t in t_values:
         for i in range(num_experimrnts):
@@ -189,9 +192,9 @@ def workflow_evaluation(
             seg_optimizer = torch.optim.Adam(SegModel.parameters(), lr=1e-3)
 
 
-            seg_loader = get_loader_seg(selected_train_list, loader_transform, 2, drop_last=True, shuffle=True)
+            seg_loader = get_loader_seg(selected_train_list, loader_transform, cfg.segmentation.batch_size, drop_last=True, shuffle=True)
             seg_loss_function = DiceLoss(sigmoid=True)
-            for e in range(30):
+            for e in range(cfg.workflow_evaluation.seg_epoch):
                 # print("This is epoch: ", e)
                 train_loss = train_seg_epoch(
                     seg_model=SegModel,
@@ -221,16 +224,16 @@ def workflow_evaluation(
             random_train_list = [i for i in development_set if i not in random_val_list]
 
             del SegModel
-            SegModel = SwinUNETR(img_size, 1, 1)
+            SegModel = SwinUNETR(img_size, cfg.segmentation.num_channel, 1)
             if pre_train:
                 SegModel.load_state_dict(torch.load(seg_net_dir, map_location=device))
             SegModel.to(device)
             selected_optimizer = torch.optim.Adam(SegModel.parameters(), lr=1e-3)
 
 
-            seg_loader = get_loader_seg(selected_train_list, loader_transform, 2, drop_last=True, shuffle=True)
+            seg_loader = get_loader_seg(selected_train_list, loader_transform, cfg.segmentation.batch_size, drop_last=True, shuffle=True)
             seg_loss_function = DiceLoss(sigmoid=True)
-            for e in range(30):
+            for e in range(cfg.workflow_evaluation.seg_epoch):
                 # print("This is epoch: ", e)
                 # print(train_loss)
                 train_loss = train_seg_epoch(
